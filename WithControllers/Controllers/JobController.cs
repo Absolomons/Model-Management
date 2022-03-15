@@ -29,7 +29,7 @@ namespace MM.Controllers
             return await _context.Jobs.ToListAsync();
         }
 
-        // GET: api/Todoes/5
+        // GET: api/Jobs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Job>> GetTodo(int id)
         {
@@ -43,7 +43,7 @@ namespace MM.Controllers
             return todo;
         }
 
-        // PUT: api/Todoes/5
+        // PUT: api/Jobs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutJob(int id, Job job)
@@ -54,7 +54,7 @@ namespace MM.Controllers
             }
 
             _context.Entry(job).State = EntityState.Modified;
-
+                
             try
             {
                 await _context.SaveChangesAsync();
@@ -74,12 +74,24 @@ namespace MM.Controllers
             return NoContent();
         }
 
-        // POST: api/Todoes
+        // POST: api/Jobs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Job>> PostTodo(Job job)
+        public async Task<ActionResult<Job>> PostJob(Job job)
         {
             _context.Jobs.Add(job);
+            await _context.SaveChangesAsync();
+
+            //return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
+            return CreatedAtAction(nameof(GetJob), new { id = job.JobId }, job);
+        }
+
+        // POST: api/Jobs/modelName
+        [HttpPost("{model")]
+        public async Task<ActionResult<Job>> PostJobModel(Job job, Model model)
+        {
+            job.Models.Add(model);
+            _context.Jobs.Update(job);
             await _context.SaveChangesAsync();
 
             //return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
@@ -99,6 +111,16 @@ namespace MM.Controllers
             _context.Jobs.Remove(job);
             await _context.SaveChangesAsync();
 
+            return NoContent();
+        }
+
+        // DELETE: api/Jobs/modelName
+        [HttpDelete("{model}")]
+        public async Task<IActionResult> DeleteJobModel(Job job, Model model)
+        {
+            job.Models.Remove(model);
+            _context.Jobs.Update(job);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
