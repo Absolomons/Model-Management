@@ -24,14 +24,15 @@ namespace MM.Controllers
 
         // GET: api/Model
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Model>>> GetModel()
+        public async Task<ActionResult<IEnumerable<ModelDTO>>> GetModel()
         {
-            return await _context.Models.ToListAsync();
+            return await _context.Models.Select(x => ModelToDTO(x))
+                .ToListAsync();
         }
 
         // GET: api/Model/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Model>> GetModel(int id)
+        public async Task<ActionResult<Model>> GetModel(int id) 
         {
             var model = await _context.Models.FindAsync(id);
 
@@ -47,8 +48,26 @@ namespace MM.Controllers
         // PUT: api/Model/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodo(int id, Model model)
+        public async Task<IActionResult> PutModel(int id, ModelDTO modelDTO)
         {
+            var model = await _context.Models.FindAsync(id);
+
+            {
+                model.FirstName = modelDTO.FirstName;
+                model.LastName = modelDTO.LastName;
+                model.Email = modelDTO.Email;
+                model.PhoneNo = modelDTO.PhoneNo;
+                model.AddresLine1 = modelDTO.AddresLine1;
+                model.AddresLine2 = modelDTO.AddresLine2;
+                model.Zip = modelDTO.Zip;
+                model.City = modelDTO.City;
+                model.BirthDay = modelDTO.BirthDay;
+                model.Height = modelDTO.Height;
+                model.HairColor = modelDTO.HairColor;
+                model.ShoeSize = modelDTO.ShoeSize;
+                model.Comments = modelDTO.Comments;
+            }
+
             if (id != model.ModelId)
             {
                 return BadRequest();
@@ -78,8 +97,9 @@ namespace MM.Controllers
         // POST: api/Todoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Model>> PostModel(Model model)
+        public async Task<ActionResult<Model>> PostModel(ModelDTO modelDTO)
         {
+            var model = new Model(modelDTO);
             _context.Models.Add(model);
             await _context.SaveChangesAsync();
 
@@ -107,5 +127,23 @@ namespace MM.Controllers
         {
             return _context.Models.Any(e => e.ModelId == id);
         }
+
+        private static ModelDTO ModelToDTO(Model model) =>
+            new ModelDTO
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                PhoneNo = model.PhoneNo,
+                AddresLine1 = model.AddresLine1,
+                AddresLine2 = model.AddresLine2,
+                Zip = model.Zip,
+                City = model.City,
+                BirthDay = model.BirthDay,
+                Height = model.Height,
+                HairColor = model.HairColor,
+                ShoeSize = model.ShoeSize,
+                Comments = model.Comments
+            };
     }
 }
