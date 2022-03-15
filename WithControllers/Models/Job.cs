@@ -2,6 +2,16 @@
 {
     public class Job
     {
+        public Job(JobDTO jobdto)
+        {
+            Customer=jobdto.Customer;
+            StartDate=jobdto.StartDate;
+            Days=jobdto.Days;
+            Location=jobdto.Location;
+            Comments = jobdto.Comments;
+            Models = jobdto.Models;
+            Expenses = null;
+        }
         public long JobId { get; set; }
         //[MaxLength(64)]
         public string? Customer { get; set; }

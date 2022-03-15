@@ -23,15 +23,46 @@ namespace MM.Controllers
         }
 
         // GET: api/JobController
+        // Get all jobs in list, mustn't include expenses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJob()
+        public async Task<ActionResult<IEnumerable<JobDTO>>> GetJob()
         {
-            return await _context.Jobs.ToListAsync();
+            return await _context.Jobs
+                .Select(x => JobToDTO(x))
+                .ToListAsync();
         }
 
         // GET: api/Jobs/5
+        // Get all jobs for specific model, no expenses.
+        [HttpGet("model/{id}")]
+        public async Task<ActionResult<IEnumerable<JobDTO>>> GetJobModel(int id)
+        {
+            var modeljobs = _context.Models.Where(x => x.ModelId == id).Select(x => new
+                {
+                    x.FirstName,
+                    x.LastName,
+                    x.Jobs.ToList()
+                }
+            ).ToList();
+
+            return modeljobs;
+        }
+
+        private static JobDTO JobToDTO(Job job) =>
+            new JobDTO
+            {
+                Customer = job.Customer,
+                StartDate = job.StartDate,
+                Days = job.Days,
+                Location = job.Location,
+                Comments = job.Comments,
+                Models = job.Models
+            };
+
+        // GET: api/Jobs/5
+        //Get job with expenses
         [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetTodo(int id)
+        public async Task<ActionResult<Job>> GetJob(int id)
         {
             var todo = await _context.Jobs.FindAsync(id);
 
@@ -44,17 +75,20 @@ namespace MM.Controllers
         }
 
         // PUT: api/Jobs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Kun opdatere grunddata in job.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJob(int id, Job job)
+        public async Task<IActionResult> PutJob(int id, JobDTO jobdto)
         {
-            if (id != job.JobId)
-            {
-                return BadRequest();
-            }
+            var job = await _context.Jobs.FindAsync(id);
+
+            //Læg jobdto data over i job
+            job.StartDate = jobdto.StartDate;
+            job.Days = jobdto.Days;
+            job.Location = jobdto.Location;
+            job.Comments = jobdto.Comments;
 
             _context.Entry(job).State = EntityState.Modified;
-                
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -75,7 +109,7 @@ namespace MM.Controllers
         }
 
         // POST: api/Jobs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Create new job
         [HttpPost]
         public async Task<ActionResult<Job>> PostJob(Job job)
         {
@@ -87,18 +121,26 @@ namespace MM.Controllers
         }
 
         // POST: api/Jobs/modelName
-        [HttpPost("{model")]
-        public async Task<ActionResult<Job>> PostJobModel(Job job, Model model)
+        // Add model to a job
+        [HttpPut("{modelId}")]
+        public async Task<IActionResult> PutJobModel(Job job, int modelId)
         {
-            job.Models.Add(model);
-            _context.Jobs.Update(job);
-            await _context.SaveChangesAsync();
+          
 
-            //return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
-            return CreatedAtAction(nameof(GetJob), new { id = job.JobId }, job);
+            var model = await _context.Models.FindAsync(modelId);
+            job.Models.Add(model);
+            model.Jobs.Add(job);
+
+            _context.Entry(job).State = EntityState.Modified;
+            _context.Entry(model).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+            
+            return NoContent();
         }
 
         // DELETE: api/Todoes/5
+        // Delete whole job
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(int id)
         {
@@ -112,12 +154,13 @@ namespace MM.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        // DELETE: api/Jobs/modelName
-        [HttpDelete("{model}")]
-        public async Task<IActionResult> DeleteJobModel(Job job, Model model)
+        } 
+        //DELETE: api/Jobs/modelName
+        // Delete model from a job
+       [HttpDelete("{model}")]
+        public async Task<IActionResult> DeleteJobModel(Job job, int modelId)
         {
+            var model = await _context.Models.FindAsync(modelId);
             job.Models.Remove(model);
             _context.Jobs.Update(job);
             await _context.SaveChangesAsync();

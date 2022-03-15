@@ -39,7 +39,6 @@ namespace MM.Controllers
             {
                 return NotFound();
             }
-
             return model;
 
             //Der skal også hentes modellens job og expenses.

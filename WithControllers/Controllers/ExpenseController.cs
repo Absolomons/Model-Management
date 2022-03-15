@@ -40,12 +40,15 @@ namespace MM.Controllers
         // POST: api/Todoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Expense>> PostExpense(Expense expense)
+        public async Task<ActionResult<Expense>> PostExpense(Expense expense, int jobId, int modelId)
         {
 
-          //  _context.Models.
-            //_context.Expenses.Add(expense);
+            _context.Expenses.Add(expense);
+            var model = await _context.Models.FindAsync(modelId);
+            var job = await _context.Jobs.FindAsync(jobId);
 
+            model.Expenses.Add(expense);
+            job.Expenses.Add(expense);
 
             await _context.SaveChangesAsync();
 
