@@ -13,47 +13,49 @@ namespace MM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MMController : ControllerBase
+    public class ModelController : ControllerBase
     {
         private readonly MMDb _context;
 
-        public MMController(MMDb context)
+        public ModelController(MMDb context)
         {
             _context = context;
         }
 
-        // GET: api/Todoes
+        // GET: api/Model
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
+        public async Task<ActionResult<IEnumerable<Model>>> GetModel()
         {
-            return await _context.Todos.ToListAsync();
+            return await _context.Models.ToListAsync();
         }
 
-        // GET: api/Todoes/5
+        // GET: api/Model/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Todo>> GetTodo(int id)
+        public async Task<ActionResult<Model>> GetModel(int id)
         {
-            var todo = await _context.Todos.FindAsync(id);
+            var model = await _context.Models.FindAsync(id);
 
-            if (todo == null)
+            if (model == null)
             {
                 return NotFound();
             }
 
-            return todo;
+            return model;
+
+            //Der skal også hentes modellens job og expenses.
         }
 
-        // PUT: api/Todoes/5
+        // PUT: api/Model/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodo(int id, Todo todo)
+        public async Task<IActionResult> PutTodo(int id, Model model)
         {
-            if (id != todo.Id)
+            if (id != model.ModelId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(todo).State = EntityState.Modified;
+            _context.Entry(model).State = EntityState.Modified;
 
             try
             {
@@ -77,26 +79,26 @@ namespace MM.Controllers
         // POST: api/Todoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Todo>> PostTodo(Todo todo)
+        public async Task<ActionResult<Model>> PostModel(Model model)
         {
-            _context.Todos.Add(todo);
+            _context.Models.Add(model);
             await _context.SaveChangesAsync();
 
             //return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
-            return CreatedAtAction(nameof(GetTodo), new { id = todo.Id }, todo);
+            return CreatedAtAction(nameof(GetModel), new { id = model.ModelId }, model);
         }
 
-        // DELETE: api/Todoes/5
-        [HttpDelete("{id}")]
+        // DELETE: api/Model/5
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteTodo(int id)
         {
-            var todo = await _context.Todos.FindAsync(id);
-            if (todo == null)
+            var model = await _context.Models.FindAsync(id);
+            if (model == null)
             {
                 return NotFound();
             }
 
-            _context.Todos.Remove(todo);
+            _context.Models.Remove(model);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -104,7 +106,7 @@ namespace MM.Controllers
 
         private bool TodoExists(int id)
         {
-            return _context.Todos.Any(e => e.Id == id);
+            return _context.Models.Any(e => e.ModelId == id);
         }
     }
 }
