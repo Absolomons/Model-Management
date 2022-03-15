@@ -35,17 +35,11 @@ namespace MM.Controllers
         // GET: api/Jobs/5
         // Get all jobs for specific model, no expenses.
         [HttpGet("model/{id}")]
-        public async Task<ActionResult<IEnumerable<JobDTO>>> GetJobModel(int id)
+        public async Task<ActionResult<IList<Job>>> GetJobModel(int id)
         {
-            var modeljobs = _context.Models.Where(x => x.ModelId == id).Select(x => new
-                {
-                    x.FirstName,
-                    x.LastName,
-                    x.Jobs.ToList()
-                }
-            ).ToList();
+            var modeljobs = _context.Models.Where(x => x.ModelId == id).Select(x => x.Jobs).SingleAsync();
 
-            return modeljobs;
+            return await modeljobs;
         }
 
         private static JobDTO JobToDTO(Job job) =>
