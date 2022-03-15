@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WithControllers.Data;
-using WithControllers.Models;
+using MM.Data;
+using MM.Models;
 
-namespace WithControllers.Controllers
+namespace MM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoesController : ControllerBase
+    public class MMController : ControllerBase
     {
-        private readonly TodoDb _context;
+        private readonly MMDb _context;
 
-        public TodoesController(TodoDb context)
+        public MMController(MMDb context)
         {
             _context = context;
         }

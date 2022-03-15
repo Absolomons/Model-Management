@@ -1,4 +1,4 @@
-﻿namespace WithControllers.Models
+﻿namespace MM.Models
 {
     public class Todo
     {

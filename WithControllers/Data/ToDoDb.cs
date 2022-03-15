@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WithControllers.Models;
+using MM.Models;
 
-namespace WithControllers.Data
+namespace MM.Data
 {
-    public class TodoDb : DbContext
+    public class MMDb : DbContext
     {
-        public TodoDb(DbContextOptions<TodoDb> options)
+        public MMDb(DbContextOptions<MMDb> options)
             : base(options) { }
 
-        public DbSet<Todo> Todos => Set<Todo>();
+        public DbSet<Job> Jobs => Set<Job>();
+        public DbSet<Model> Models => Set<Model>();
+        public DbSet<Expense> Expenses => Set<Expense>();
     }
 }
