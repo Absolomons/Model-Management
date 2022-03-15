@@ -9,6 +9,6 @@
         public DateTime Date { get; set; }
         public string? Text { get; set; }
         //[Column(TypeName = "decimal(9,2)")]
-        public decimal amount { get; set; }
+        public decimal Amount { get; set; }
     }
 }
