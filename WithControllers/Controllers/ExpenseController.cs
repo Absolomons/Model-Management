@@ -21,16 +21,36 @@ namespace MM.Controllers
         {
             _context = context;
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Expense>> GetExpense(int id)
+        {
+            var expense = await _context.Expenses.FindAsync(id);
+
+            if (expense == null)
+            {
+                return NotFound();
+            }
+
+            return expense;
+
+            //Der skal også hentes modellens job og expenses.
+        }
+
         // POST: api/Todoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Todo>> PostTodo(Todo todo)
+        public async Task<ActionResult<Expense>> PostExpense(Expense expense)
         {
-            _context.Todos.Add(todo);
+
+          //  _context.Models.
+            //_context.Expenses.Add(expense);
+
+
             await _context.SaveChangesAsync();
 
             //return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
-            return CreatedAtAction(nameof(GetTodo), new { id = todo.Id }, todo);
+            return CreatedAtAction(nameof(GetExpense), new { id = expense.ExpenseId }, expense);
         }
     }
 }
