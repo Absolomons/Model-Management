@@ -32,7 +32,7 @@ namespace MM.Controllers
 
         // GET: api/Model/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Model>> GetModel(int id) 
+        public async Task<ActionResult<Model>> GetModel(long id) 
         {
             var model = await _context.Models.FindAsync(id);
 
@@ -48,7 +48,7 @@ namespace MM.Controllers
         // PUT: api/Model/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutModel(int id, ModelDTO modelDTO)
+        public async Task<IActionResult> PutModel(long id, ModelDTO modelDTO)
         {
             var model = await _context.Models.FindAsync(id);
 
@@ -94,7 +94,8 @@ namespace MM.Controllers
             return NoContent();
         }
 
-        // POST: api/Todoes
+        //
+        // : api/Todoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Model>> PostModel(ModelDTO modelDTO)
@@ -109,7 +110,7 @@ namespace MM.Controllers
 
         // DELETE: api/Model/5
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteTodo(int id)
+        public async Task<IActionResult> DeleteTodo(long id)
         {
             var model = await _context.Models.FindAsync(id);
             if (model == null)
@@ -123,7 +124,7 @@ namespace MM.Controllers
             return NoContent();
         }
 
-        private bool TodoExists(int id)
+        private bool TodoExists(long id)
         {
             return _context.Models.Any(e => e.ModelId == id);
         }

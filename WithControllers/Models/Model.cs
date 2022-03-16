@@ -3,6 +3,10 @@ namespace MM.Models
 {
     public class Model
     {
+        public Model()
+        {
+        }
+
         public Model(ModelDTO modelDTO)
         {
             FirstName = modelDTO.FirstName;

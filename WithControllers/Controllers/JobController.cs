@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using MM.Data;
 using MM.Models;
@@ -35,7 +36,7 @@ namespace MM.Controllers
         // GET: api/Jobs/5
         // Get all jobs for specific model, no expenses.
         [HttpGet("model/{id}")]
-        public async Task<ActionResult<IList<Job>>> GetJobModel(int id)
+        public async Task<ActionResult<IList<Job>>> GetJobModel(long id)
         {
             var modeljobs = _context.Models.Where(x => x.ModelId == id).Select(x => x.Jobs).SingleAsync();
 
@@ -56,7 +57,7 @@ namespace MM.Controllers
         // GET: api/Jobs/5
         //Get job with expenses
         [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetJob(int id)
+        public async Task<ActionResult<Job>> GetJob(long id)
         {
             var todo = await _context.Jobs.FindAsync(id);
 
@@ -64,14 +65,13 @@ namespace MM.Controllers
             {
                 return NotFound();
             }
-
             return todo;
         }
 
         // PUT: api/Jobs/5
         // Kun opdatere grunddata in job.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJob(int id, JobDTO jobdto)
+        public async Task<IActionResult> PutJob(long id, JobDTO jobdto)
         {
             var job = await _context.Jobs.FindAsync(id);
 
@@ -105,8 +105,17 @@ namespace MM.Controllers
         // POST: api/Jobs
         // Create new job
         [HttpPost]
-        public async Task<ActionResult<Job>> PostJob(Job job)
+        public async Task<ActionResult<Job>> PostJob(JobDTO jobdto)
         {
+
+            var job = new Job();
+
+            job.StartDate = jobdto.StartDate;
+            job.Days = jobdto.Days;
+            job.Location = jobdto.Location;
+            job.Comments = jobdto.Comments;
+            job.Customer = jobdto.Customer;
+
             _context.Jobs.Add(job);
             await _context.SaveChangesAsync();
 
@@ -114,14 +123,14 @@ namespace MM.Controllers
             return CreatedAtAction(nameof(GetJob), new { id = job.JobId }, job);
         }
 
-        // POST: api/Jobs/modelName
+        // PUT: api/Jobs/modelName
         // Add model to a job
-        [HttpPut("{modelId}")]
-        public async Task<IActionResult> PutJobModel(Job job, int modelId)
+        [HttpPut("model/{modelId}")]
+        public async Task<IActionResult> PutJobModel(long jobId, long modelId)
         {
-          
+            var job = await _context.Jobs.Where(x => x.JobId==jobId).Include(m => m.Models).FirstOrDefaultAsync();
+            var model = await _context.Models.Where(x => x.ModelId==modelId).Include(j => j.Jobs).FirstOrDefaultAsync();
 
-            var model = await _context.Models.FindAsync(modelId);
             job.Models.Add(model);
             model.Jobs.Add(job);
 
@@ -136,7 +145,7 @@ namespace MM.Controllers
         // DELETE: api/Todoes/5
         // Delete whole job
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJob(int id)
+        public async Task<IActionResult> DeleteJob(long id)
         {
             var job = await _context.Jobs.FindAsync(id);
             if (job == null)
@@ -151,17 +160,19 @@ namespace MM.Controllers
         } 
         //DELETE: api/Jobs/modelName
         // Delete model from a job
-       [HttpDelete("{model}")]
-        public async Task<IActionResult> DeleteJobModel(Job job, int modelId)
+       [HttpDelete("model/{model}")]
+        public async Task<IActionResult> DeleteJobModel(long jobId, long modelId)
         {
-            var model = await _context.Models.FindAsync(modelId);
+
+            var job = await _context.Jobs.Where(x => x.JobId == jobId).Include(m => m.Models).FirstOrDefaultAsync();
+            var model = await _context.Models.Where(x => x.ModelId == modelId).Include(j => j.Jobs).FirstOrDefaultAsync();
             job.Models.Remove(model);
             _context.Jobs.Update(job);
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
-        private bool JobExists(int id)
+        private bool JobExists(long id)
         {
             return _context.Jobs.Any(e => e.JobId == id);
         }
