@@ -142,8 +142,7 @@ namespace MM.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Todoes/5
-        // Delete whole job
+        // DELETE: api/Todoes/5// Delete whole job
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(long id)
         {
