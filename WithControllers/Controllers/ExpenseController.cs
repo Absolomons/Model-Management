@@ -13,17 +13,17 @@ namespace MM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MMController : ControllerBase
+    public class ExpenseController : ControllerBase
     {
         private readonly MMDb _context;
 
-        public MMController(MMDb context)
+        public ExpenseController(MMDb context)
         {
             _context = context;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Expense>> GetExpense(int id)
+        public async Task<ActionResult<Expense>> GetExpense(long id)
         {
             var expense = await _context.Expenses.FindAsync(id);
 
@@ -40,7 +40,7 @@ namespace MM.Controllers
         // POST: api/Todoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Expense>> PostExpense(Expense expense, int jobId, int modelId)
+        public async Task<ActionResult<Expense>> PostExpense(Expense expense, long jobId, long modelId)
         {
 
             _context.Expenses.Add(expense);

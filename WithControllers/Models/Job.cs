@@ -2,6 +2,10 @@
 {
     public class Job
     {
+        public Job()
+        {
+        }
+
         public Job(JobDTO jobdto)
         {
             Customer=jobdto.Customer;
