@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 
 namespace MM.Hubs
 {
     public class MMHub : Hub
     {
-        public async Task UpdatePage()
+        public async Task SendMessage(string user, string message)
         {
-            await Clients.All.SendAsync("ReceiveUpdate");
+            await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
-    }
+    }   
 }

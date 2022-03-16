@@ -27,6 +27,6 @@ app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<MMHub>("/MMHub");
+app.MapHub<MMHub>("/chatHub");
 
 app.Run();

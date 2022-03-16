@@ -23,10 +23,10 @@
     <ul id="messagesList"></ul>
     <script src="https://unpkg.com/@microsoft/signalr@3.0.1/dist/browser/signalr.js" crossorigin="anonymous"></script>
     <script>
-        var connection = new signalR.HubConnectionBuilder().withUrl("/MMHub").build();
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        connection.on("ReceiveUpdate", function () {
-            var encodedMsg = " says ";
+        connection.on("ReceiveMessage", function (user, message) {
+            var encodedMsg = user + " says " + message;
             var li = document.createElement("li");
             li.textContent = encodedMsg;
             document.getElementById("messagesList").appendChild(li);
@@ -41,7 +41,7 @@
         document.getElementById("sendButton").addEventListener("click", function (event) {
             var user = document.getElementById("userInput").value;
             var message = document.getElementById("messageInput").value;
-            connection.invoke("UpdatePage").catch(function (err) {
+            connection.invoke("SendMessage", user, message).catch(function (err) {
                 return console.error(err.toString());
             });
             event.preventDefault();
