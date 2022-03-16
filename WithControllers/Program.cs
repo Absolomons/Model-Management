@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using MM.Data;
+using MM.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSignalR();
 builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<MMDb>(opt => opt.UseInMemoryDatabase("ToDoList"));
@@ -25,5 +27,6 @@ app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<MMHub>("/MMHub");
 
 app.Run();
