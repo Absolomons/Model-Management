@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MM.Data;
+using MM.Hubs;
 using MM.Models;
 
 namespace MM.Controllers
@@ -16,9 +18,11 @@ namespace MM.Controllers
     public class ExpenseController : ControllerBase
     {
         private readonly MMDb _context;
+        private readonly IHubContext<MMHub, IExpense> _expenseContext;
 
-        public ExpenseController(MMDb context)
+        public ExpenseController(IHubContext<MMHub, IExpense> expenseContext ,MMDb context )
         {
+            _expenseContext = expenseContext;
             _context = context;
         }
 
@@ -32,6 +36,7 @@ namespace MM.Controllers
                 return NotFound();
             }
 
+           
             return expense;
 
             //Der skal også hentes modellens job og expenses.
@@ -44,8 +49,8 @@ namespace MM.Controllers
         {
 
             _context.Expenses.Add(expense);
-            var job = await _context.Jobs.Where(x => x.JobId == jobId).Include(m => m.Models).FirstOrDefaultAsync();
-            var model = await _context.Models.Where(x => x.ModelId == modelId).Include(j => j.Jobs).FirstOrDefaultAsync();
+            var job = await _context.Jobs.Where(x => x.JobId == jobId).Include(m => m.Models).Include(e => e.Expenses).FirstOrDefaultAsync();
+            var model = await _context.Models.Where(x => x.ModelId == modelId).Include(j => j.Jobs).Include(e => e.Expenses).FirstOrDefaultAsync();
 
             model.Expenses.Add(expense);
             job.Expenses.Add(expense);
@@ -53,6 +58,7 @@ namespace MM.Controllers
             await _context.SaveChangesAsync();
 
             //return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
+            await _expenseContext.Clients.All.NewExpense(expense);
             return CreatedAtAction(nameof(GetExpense), new { id = expense.ExpenseId }, expense);
         }
     }

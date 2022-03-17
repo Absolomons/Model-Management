@@ -25,8 +25,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
-
+app.UseStaticFiles();
 app.MapControllers();
-app.MapHub<MMHub>("/MMHub");
+app.MapHub<MMHub>("/mMHub");
 
 app.Run();

@@ -1,12 +1,13 @@
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using MM.Models;
 
 namespace MM.Hubs
 {
-    public class MMHub : Hub
+    public class MMHub : Hub<IExpense>
     {
-        public async Task UpdatePage()
+        public async Task NewExpense(Expense expense)
         {
-            await Clients.All.SendAsync("ReceiveUpdate");
+            await Clients.All.NewExpense(expense);
         }
-    }
+    }   
 }
