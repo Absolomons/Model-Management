@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using MM.Models;
 
 namespace MM.Hubs
 {
-    public class MMHub : Hub
+    public class MMHub : Hub<IExpense>
     {
-        public async Task SendMessage(string user, string message)
+        public async Task NewExpense(Expense expense)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            await Clients.All.NewExpense(expense);
         }
     }   
 }
