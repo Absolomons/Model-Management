@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,30 +31,52 @@ namespace MM.Controllers
         public async Task<ActionResult<IEnumerable<JobDTO>>> GetJob()
         {
             return await _context.Jobs
-                .Select(x => JobToDTO(x))
+                .Include(x => x.Models)
+                .Select(job => new JobDTO
+                    {
+                    Customer = job.Customer,
+                    StartDate = job.StartDate,
+                    Days = job.Days,
+                    Location = job.Location,
+                    Comments = job.Comments,
+                    Models = job.Models.Select(model => new ModelDTO()
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName
+                    }).ToList()
+                })
                 .ToListAsync();
         }
 
         // GET: api/Jobs/5
         // Get all jobs for specific model, no expenses.
-        [HttpGet("model/{id}")]
-        public async Task<ActionResult<IList<Job>>> GetJobModel(long id)
+        [HttpGet("model/{modelId}")]
+        public async Task<IList<Object>> GetJobModel(long modelId)
         {
-            var modeljobs = _context.Models.Where(x => x.ModelId == id).Select(x => x.Jobs).SingleAsync();
+            //var model = await _context.Models.Where(x => x.ModelId == id).Include(model => model.Jobs).FirstOrDefaultAsync();
+            //var options = new JsonSerializerOptions(JsonSerializerDefaults.Web){ReferenceHandler = ReferenceHandler.IgnoreCycles};
+            //return Results.Json(model.Jobs, options);
 
-            return await modeljobs;
-        }
-
-        private static JobDTO JobToDTO(Job job) =>
-            new JobDTO
+            IList<object> model = new[]
             {
-                Customer = job.Customer,
-                StartDate = job.StartDate,
-                Days = job.Days,
-                Location = job.Location,
-                Comments = job.Comments,
-                Models = job.Models
+                await _context.Models
+                    .Where(x => x.ModelId == modelId)
+                    .Select(y => new
+                    {
+                        y.FirstName,
+                        y.LastName,
+                        Jobs = y.Jobs.Select(x => new
+                        {
+                            x.Customer,
+                            x.StartDate,
+                            x.Location,
+                            x.Comments,
+                            x.Days
+                        }).ToList()
+                    }).ToListAsync()
             };
+            return model;
+        }
 
         // GET: api/Jobs/5
         //Get job with expenses
@@ -159,7 +183,7 @@ namespace MM.Controllers
         } 
         //DELETE: api/Jobs/modelName
         // Delete model from a job
-       [HttpDelete("model/{model}")]
+       [HttpDelete("model/{modelId}")]
         public async Task<IActionResult> DeleteJobModel(long jobId, long modelId)
         {
 
