@@ -49,8 +49,12 @@ namespace MM.Controllers
         {
 
             _context.Expenses.Add(expense);
-            var job = await _context.Jobs.Where(x => x.JobId == jobId).Include(m => m.Models).Include(e => e.Expenses).FirstOrDefaultAsync();
-            var model = await _context.Models.Where(x => x.ModelId == modelId).Include(j => j.Jobs).Include(e => e.Expenses).FirstOrDefaultAsync();
+
+            var job = new Job();
+            var model = new Model();
+
+            job = await _context.Jobs.Where(x => x.JobId == jobId).Include(m => m.Models).Include(e => e.Expenses).FirstOrDefaultAsync();
+            model = await _context.Models.Where(x => x.ModelId == modelId).Include(j => j.Jobs).Include(e => e.Expenses).FirstOrDefaultAsync();
 
             model.Expenses.Add(expense);
             job.Expenses.Add(expense);

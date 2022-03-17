@@ -83,13 +83,10 @@ namespace MM.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Job>> GetJob(long id)
         {
-            var todo = await _context.Jobs.FindAsync(id);
 
-            if (todo == null)
-            {
-                return NotFound();
-            }
-            return todo;
+            return await _context.Jobs
+                .Include(x => x.Models)
+                .Include(x => x.Expenses).FirstOrDefaultAsync();
         }
 
         // PUT: api/Jobs/5
